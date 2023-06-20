@@ -1,0 +1,323 @@
+-- Configuration
+local labelColor = Color3.new(1, 1, 1) -- Color of the label text
+local labelStrokeColor = Color3.new(0, 0, 0) -- Color of the label text stroke
+local labelSize = UDim2.new(0, 100, 0, 30) -- Size of the label
+local labelOffset = Vector3.new(0, 3, 0) -- Offset position of the label above the tool
+
+-- List of desired tool names
+local desiredToolNames = {
+    "Kilo Fruit",
+    "Spin Fruit",
+    "Chop Fruit",
+    "Spring Fruit",
+    "Bomb Fruit",
+    "Smoke Fruit",
+    "Spike Fruit",
+    "Flame Fruit",
+    "Falcon Fruit",
+    "Ice Fruit",
+    "Sand Fruit",
+    "Dark Fruit",
+    "Revive Fruit",
+    "Diamond Fruit",
+    "Light Fruit",
+    "Barrier Fruit",
+    "Rubber Fruit",
+    "Magma Fruit",
+    "Quake Fruit",
+    "Human:Buddha Fruit", -- Modified the name
+    "Love Fruit",
+    "Spider Fruit",
+    "Phoenix Fruit",
+    "Portal Fruit",
+    "Rumble Fruit",
+    "Paw Fruit",
+    "Gravity Fruit",
+    "Blizzard Fruit",
+    "Dough Fruit",
+    "Shadow Fruit",
+    "Venom Fruit",
+    "Control Fruit",
+    "Spirit Fruit",
+    "Dragon Fruit",
+    "Leopard Fruit"
+}
+
+local ESPEnabled = false
+local ESP_FRUIT_ENABLED = false
+
+local function ToggleESP()
+    ESPEnabled = not ESPEnabled
+    if ESPEnabled then
+        -- Enable ESP functionality for first script
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local camera = workspace.CurrentCamera
+
+        local function createFloatingLabel(part)
+            local label = Instance.new("BillboardGui")
+            label.Name = "FloatingLabel"
+            label.Adornee = part
+            label.Size = labelSize
+            label.StudsOffset = labelOffset
+            label.AlwaysOnTop = true
+            label.Parent = game:GetService("CoreGui")
+
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Name = "DistanceLabel"
+            textLabel.BackgroundTransparency = 1
+            textLabel.Size = UDim2.new(1, 0, 1, 0)
+            textLabel.Font = Enum.Font.SourceSansBold
+            textLabel.TextSize = 18
+            textLabel.TextColor3 = labelColor
+            textLabel.TextStrokeColor3 = labelStrokeColor
+            textLabel.TextStrokeTransparency = 0
+            textLabel.Parent = label
+
+            local function updateLabel()
+                local distance = math.floor((part.Position - humanoidRootPart.Position).Magnitude)
+                textLabel.Text = tostring(distance) .. "m"
+            end
+
+            -- Call updateLabel initially
+            updateLabel()
+
+            -- Connect updateLabel to the Heartbeat event to continuously update the label text
+            game:GetService("RunService").Heartbeat:Connect(updateLabel)
+        end
+
+        local function isDesiredTool(toolName)
+            for _, desiredName in ipairs(desiredToolNames) do
+                if desiredName == toolName then
+                    return true
+                end
+            end
+            return false
+        end
+
+        local function onToolAdded(tool)
+            local toolName = tool.Name
+            if isDesiredTool(toolName) then
+                createFloatingLabel(tool.Handle)
+            end
+        end
+
+        local function onToolRemoved(tool)
+            local floatingLabel = tool.Handle:FindFirstChild("FloatingLabel")
+            if floatingLabel then
+                floatingLabel:Destroy()
+            end
+        end
+
+        -- Listen for new tools
+        game:GetService("Workspace").DescendantAdded:Connect(function(child)
+            if child:IsA("Tool") then
+                local toolName = child.Name
+                if isDesiredTool(toolName) then
+                    createFloatingLabel(child.Handle)
+                end
+            end
+        end)
+
+        -- Listen for removed tools
+        game:GetService("Workspace").DescendantRemoving:Connect(function(child)
+            if child:IsA("Tool") then
+                local toolName = child.Name
+                if isDesiredTool(toolName) then
+                    local floatingLabel = child.Handle:FindFirstChild("FloatingLabel")
+                    if floatingLabel then
+                        floatingLabel:Destroy()
+                    end
+                end
+            end
+        end)
+
+        -- Create floating labels for existing tools in the game
+        for _, tool in ipairs(game:GetService("Workspace"):GetDescendants()) do
+            if tool:IsA("Tool") then
+                local toolName = tool.Name
+                if isDesiredTool(toolName) then
+                    createFloatingLabel(tool.Handle)
+                end
+            end
+        end
+    else
+        -- Disable ESP functionality for first script
+        for _, floatingLabel in ipairs(game:GetService("CoreGui"):GetChildren()) do
+            if floatingLabel:IsA("BillboardGui") and floatingLabel.Name == "FloatingLabel" then
+                floatingLabel:Destroy()
+            end
+        end
+    end
+
+    ESP_FRUIT_ENABLED = not ESP_FRUIT_ENABLED
+    if ESP_FRUIT_ENABLED then
+        -- Enable ESP functionality for second script
+        local fruitNames = {
+            "Kilo Fruit",
+            "Spin Fruit",
+            "Chop Fruit",
+            "Spring Fruit",
+            "Bomb Fruit",
+            "Smoke Fruit",
+            "Spike Fruit",
+            "Flame Fruit",
+            "Falcon Fruit",
+            "Ice Fruit",
+            "Sand Fruit",
+            "Dark Fruit",
+            "Revive Fruit",
+            "Diamond Fruit",
+            "Light Fruit",
+            "Barrier Fruit",
+            "Rubber Fruit",
+            "Magma Fruit",
+            "Quake Fruit",
+            "Human:Buddha Fruit",
+            "Love Fruit",
+            "Spider Fruit",
+            "Phoenix Fruit",
+            "Portal Fruit",
+            "Rumble Fruit",
+            "Paw Fruit",
+            "Gravity Fruit",
+            "Blizzard Fruit",
+            "Dough Fruit",
+            "Shadow Fruit",
+            "Venom Fruit",
+            "Control Fruit",
+            "Spirit Fruit",
+            "Dragon Fruit",
+            "Leopard Fruit"
+        }
+
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        local camera = workspace.CurrentCamera
+
+        local function createFloatingLabel(part, fruitName)
+            local label = Instance.new("BillboardGui")
+            label.Name = "FloatingLabel"
+            label.Adornee = part
+            label.Size = UDim2.new(0, 100, 0, 60)
+            label.StudsOffset = Vector3.new(0, 4, 0)
+            label.AlwaysOnTop = true
+            label.Parent = part
+
+            local nameLabel = Instance.new("TextLabel")
+            nameLabel.Name = "NameLabel"
+            nameLabel.BackgroundTransparency = 1
+            nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+            nameLabel.Font = Enum.Font.SourceSansBold
+            nameLabel.TextSize = 18
+            nameLabel.TextColor3 = labelColor
+            nameLabel.TextStrokeColor3 = labelStrokeColor
+            nameLabel.TextStrokeTransparency = 0
+            nameLabel.Text = fruitName
+            nameLabel.Parent = label
+
+            local function updatePosition()
+                local position = part.Position
+                local distance = (position - humanoidRootPart.Position).Magnitude
+                local viewportPosition = camera:WorldToViewportPoint(position)
+                if viewportPosition.Z > 0 then
+                    local screenPosition = viewportPosition * camera.ViewportSize
+                    label.Enabled = true
+                    label.Size = UDim2.new(0, 1000 / viewportPosition.Z, 0, 600 / viewportPosition.Z)
+                    label.Position = UDim2.new(0, screenPosition.X - label.Size.X.Offset / 2, 0, screenPosition.Y - label.Size.Y.Offset)
+
+                    nameLabel.Text = fruitName
+                else
+                    label.Enabled = false
+                end
+            end
+
+            -- Call updatePosition initially
+            updatePosition()
+
+            -- Connect updatePosition to the RenderStepped event to continuously update the label position
+            game:GetService("RunService").RenderStepped:Connect(updatePosition)
+        end
+
+        local function onFruitAdded(fruit)
+            local fruitName = fruit.Name
+            for _, name in ipairs(fruitNames) do
+                if fruitName == name then
+                    createFloatingLabel(fruit, fruitName)
+                    break
+                end
+            end
+        end
+
+        local function onFruitRemoved(fruit)
+            local floatingLabel = fruit:FindFirstChild("FloatingLabel")
+            if floatingLabel then
+                floatingLabel:Destroy()
+            end
+        end
+
+        -- Check existing fruits
+        for _, fruit in ipairs(workspace:GetChildren()) do
+            onFruitAdded(fruit)
+        end
+
+        -- Listen for new fruits
+        workspace.ChildAdded:Connect(function(child)
+            onFruitAdded(child)
+        end)
+
+        -- Listen for removed fruits
+        workspace.ChildRemoved:Connect(function(child)
+            onFruitRemoved(child)
+        end)
+    else
+        -- Disable ESP functionality for second script
+        for _, floatingLabel in ipairs(workspace:GetDescendants()) do
+            if floatingLabel:IsA("BillboardGui") and floatingLabel.Name == "FloatingLabel" then
+                floatingLabel:Destroy()
+            end
+        end
+    end
+end
+
+local function ToggleESPCheckbox()
+    ToggleESP()
+end
+
+-- Create the GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ESP_FRUIT_GUI"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Name = "MainFrame"
+Frame.Size = UDim2.new(0, 200, 0, 100)
+Frame.Position = UDim2.new(0.5, -100, 0.5, -50)
+Frame.BackgroundColor3 = Color3.new(0, 0, 0)
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Size = UDim2.new(1, 0, 0, 20)
+TitleLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+TitleLabel.TextColor3 = Color3.new(1, 1, 1)
+TitleLabel.Font = Enum.Font.Arial
+TitleLabel.TextSize = 12
+TitleLabel.Text = "ESP FRUIT"
+TitleLabel.Parent = Frame
+
+local ToggleESPButton = Instance.new("TextButton")
+ToggleESPButton.Name = "ToggleESPButton"
+ToggleESPButton.Size = UDim2.new(0, 100, 0, 30)
+ToggleESPButton.Position = UDim2.new(0.5, -50, 0.5, -15)
+ToggleESPButton.BackgroundColor3 = Color3.new(1, 1, 1)
+ToggleESPButton.TextColor3 = Color3.new(0, 0, 0)
+ToggleESPButton.Font = Enum.Font.Arial
+ToggleESPButton.TextSize = 12
+ToggleESPButton.Text = "Toggle ESP"
+ToggleESPButton.Parent = Frame
+ToggleESPButton.MouseButton1Click:Connect(ToggleESPCheckbox)
